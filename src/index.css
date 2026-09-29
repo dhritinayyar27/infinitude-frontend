@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* Shared, subtle motion utilities for auth/state transitions (opacity + small
+   transform only - see PROJECT_ARCHITECTURE.md §17 UI intent: polished, not gaudy). */
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes success-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-slide-in {
+  animation: fade-slide-in 0.25s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+.animate-success-pop {
+  animation: success-pop 0.35s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-slide-in,
+  .animate-shake,
+  .animate-success-pop {
+    animation: none;
+  }
+}
