@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import Navbar from './components/Navbar'
 import ProtectedRoute from './components/ProtectedRoute'
 import GuestRoute from './components/GuestRoute'
@@ -6,8 +7,6 @@ import LoadingSpinner from './components/LoadingSpinner'
 import Dashboard from './pages/Dashboard'
 import CreateNotes from './pages/CreateNotes'
 import TocReview from './pages/TocReview'
-import GenerationProgress from './pages/GenerationProgress'
-import NotesViewer from './pages/NotesViewer'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import NotFound from './pages/NotFound'
@@ -74,33 +73,10 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/notes/:id/generate"
-            element={
-              <ProtectedRoute>
-                <GenerationProgress />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/notes/:id/view"
-            element={
-              <ProtectedRoute>
-                <NotesViewer />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/notes/:id/edit"
-            element={
-              <ProtectedRoute>
-                <NotesViewer />
-              </ProtectedRoute>
-            }
-          />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
+      <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
     </BrowserRouter>
   )
 }
