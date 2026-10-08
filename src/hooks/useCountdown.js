@@ -20,15 +20,13 @@ function useCountdown() {
   const start = useCallback(
     (seconds) => {
       clear()
-      setSecondsLeft(seconds)
+      const deadline = Date.now() + Math.max(0, seconds) * 1000
+      setSecondsLeft(Math.max(0, Math.ceil(seconds)))
+      if (seconds <= 0) return
       timerRef.current = setInterval(() => {
-        setSecondsLeft((prev) => {
-          if (prev <= 1) {
-            clear()
-            return 0
-          }
-          return prev - 1
-        })
+        const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000))
+        setSecondsLeft(remaining)
+        if (remaining === 0) clear()
       }, 1000)
     },
     [clear],

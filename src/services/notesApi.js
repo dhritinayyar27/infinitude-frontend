@@ -17,3 +17,4 @@ export const getToc = (noteId) => api.get(`/notes/${noteId}/toc`)
 
 export const updateToc = (noteId, sections) => api.put(`/notes/${noteId}/toc`, { sections })
 
+export const generateNotes = (noteId) => api.post(`/notes/${noteId}/generate`)

@@ -7,7 +7,9 @@ import LoadingSpinner from './components/LoadingSpinner'
 import Dashboard from './pages/Dashboard'
 import CreateNotes from './pages/CreateNotes'
 import TocReview from './pages/TocReview'
+import NotesReview from './pages/NotesReview/NotesReview'
 import Login from './pages/Login'
+import VerifyEmail from './pages/VerifyEmail/VerifyEmail'
 import Signup from './pages/Signup'
 import NotFound from './pages/NotFound'
 import { useAuth } from './hooks/useAuth'
@@ -33,6 +35,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<RootRedirect />} />
+          <Route path="/login/verify" element={<VerifyEmail />} />
           <Route
             path="/login"
             element={
@@ -74,6 +77,7 @@ function App() {
             }
           />
           <Route path="*" element={<NotFound />} />
+          <Route path="/notes/:id" element={<ProtectedRoute><NotesReview /></ProtectedRoute>} />
         </Routes>
       </div>
       <Toaster position="top-right" toastOptions={{ duration: 3000 }} />
@@ -82,4 +86,3 @@ function App() {
 }
 
 export default App
-

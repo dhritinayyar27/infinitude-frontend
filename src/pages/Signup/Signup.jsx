@@ -2,13 +2,12 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import OtpInput from '../../components/OtpInput'
 import LoadingSpinner from '../../components/LoadingSpinner'
+import Brand from '../../components/Brand/Brand'
 import { useAuth } from '../../hooks/useAuth'
 import useCountdown from '../../hooks/useCountdown'
 import { sendSignupOtp } from '../../services/authApi'
 import { getErrorMessage } from '../../utils/errorMessage'
 import { isValidEmail, isValidName } from '../../utils/validators'
-
-const RESEND_COOLDOWN_SECONDS = 30
 
 // Signup state machine: 'details' (name + email) -> 'otp' -> straight to /dashboard on success.
 function Signup() {
@@ -60,7 +59,7 @@ function Signup() {
       setOtp('')
       setOtpError('')
       setInfoMessage(data?.message || 'If the email is valid, an OTP has been sent.')
-      resendCooldown.start(RESEND_COOLDOWN_SECONDS)
+      resendCooldown.start(data?.resendCooldownSeconds ?? 30)
     } catch (error) {
       setEmailError(getErrorMessage(error, 'Unable to send the OTP right now. Please try again.'))
     } finally {
@@ -76,8 +75,9 @@ function Signup() {
 
     try {
       const { data } = await sendSignupOtp(name.trim(), email.trim())
+      setOtp('')
       setInfoMessage(data?.message || 'A new OTP has been sent to your email.')
-      resendCooldown.start(RESEND_COOLDOWN_SECONDS)
+      resendCooldown.start(data?.resendCooldownSeconds ?? 30)
     } catch (error) {
       setOtpError(getErrorMessage(error, 'Unable to resend the OTP right now. Please try again.'))
     } finally {
@@ -123,8 +123,7 @@ function Signup() {
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-md flex-col justify-center px-4 py-10 sm:px-6 sm:py-16">
       <div className="mb-8 flex flex-col items-center gap-2">
-        <img src="/favicon.svg" alt="" aria-hidden="true" className="h-10 w-10" />
-        <span className="text-lg font-semibold tracking-tight text-slate-900">Infinitude</span>
+        <Brand />
       </div>
 
       <div

@@ -8,6 +8,52 @@ body {
   min-height: 100svh;
 }
 
+.notes-markdown {
+  color: #334155;
+  font-size: 0.95rem;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+
+.notes-markdown > :first-child { margin-top: 0; }
+.notes-markdown p, .notes-markdown ul, .notes-markdown ol,
+.notes-markdown blockquote, .notes-markdown pre, .notes-table-scroll { margin: 1rem 0; }
+.notes-markdown h1, .notes-markdown h2, .notes-markdown h3,
+.notes-markdown h4, .notes-markdown h5, .notes-markdown h6 {
+  margin: 1.75rem 0 0.75rem;
+  color: #0f172a;
+  font-weight: 650;
+  line-height: 1.4;
+}
+.notes-markdown h1, .notes-markdown h2 { font-size: 1.25rem; }
+.notes-markdown h3 { font-size: 1.1rem; }
+.notes-markdown ul { list-style: disc; padding-left: 1.5rem; }
+.notes-markdown ol { list-style: decimal; padding-left: 1.5rem; }
+.notes-markdown li { margin: 0.35rem 0; }
+.notes-markdown li > p { margin: 0.35rem 0; }
+.notes-markdown strong { font-weight: 650; color: #0f172a; }
+.notes-markdown a { color: #1d4ed8; text-decoration: underline; }
+.notes-markdown a:focus-visible { outline: 2px solid #2563eb; outline-offset: 3px; }
+.notes-markdown blockquote { border-left: 3px solid #93c5fd; padding: 0.25rem 1rem; background: #eff6ff; }
+.notes-markdown code { font-size: 0.85em; background: #f1f5f9; padding: 0.15rem 0.3rem; border-radius: 0.25rem; }
+.notes-markdown pre {
+  overflow-x: auto;
+  border-radius: 0.6rem;
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 1rem;
+  overflow-wrap: normal;
+}
+.notes-markdown pre code { padding: 0; background: transparent; color: inherit; }
+.notes-table-scroll { overflow-x: auto; }
+.notes-markdown table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+.notes-markdown th, .notes-markdown td { border: 1px solid #cbd5e1; padding: 0.6rem 0.8rem; text-align: left; }
+.notes-markdown th { background: #f8fafc; font-weight: 650; }
+.notes-markdown .katex-display { overflow-x: auto; overflow-y: hidden; padding: 0.5rem 0; }
+.notes-markdown .katex-error { color: #b91c1c; white-space: pre-wrap; }
+.notes-markdown .notes-math-warning { padding: 0.75rem 1rem; border: 1px solid #fecaca; border-radius: 0.5rem; background: #fef2f2; color: #b91c1c; font-size: 0.85rem; }
+.notes-markdown hr { margin: 1.5rem 0; border-color: #e2e8f0; }
+
 /* Shared, subtle motion utilities for auth/state transitions (opacity + small
    transform only - see PROJECT_ARCHITECTURE.md §17 UI intent: polished, not gaudy). */
 @keyframes fade-slide-in {

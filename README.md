@@ -1,5 +1,16 @@
 # React + Vite
 
+## TOC editing
+
+The TOC save request sends each section's `sectionId`, `title`, and explicit
+one-based `order` to `PUT /api/notes/{noteId}/toc`. Order is derived from the
+current editor list so edits, additions, deletions, and drag-and-drop reordering
+all save consistently. New sections send a null `sectionId`; existing sections
+retain their persisted IDs. API save and regeneration errors display the backend error message
+when available.
+
+Run `npm test` for the TOC save payload regression tests.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:

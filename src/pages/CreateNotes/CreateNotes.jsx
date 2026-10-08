@@ -53,7 +53,10 @@ function CreateNotes() {
       </Link>
 
       <div className="rounded-xl border border-slate-200 bg-white p-8 shadow-md shadow-slate-900/5 mt-4">
-        <h1 className="text-2xl font-semibold text-slate-900 mb-8">Create Table of Contents</h1>
+        <h1 className="text-2xl font-semibold text-slate-900 mb-2">Create Notes</h1>
+        <p className="mb-8 text-sm text-slate-500">
+          First generate a TOC, review and save it, then generate detailed notes from that saved outline.
+        </p>
 
         <form onSubmit={handleSubmit} className="space-y-7">
           {/* Topic */}

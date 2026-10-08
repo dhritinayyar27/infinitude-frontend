@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import LoadingSpinner from '../LoadingSpinner'
+import { BRAND_LOGO_SRC } from '../Brand/Brand'
 
 function Navbar() {
   const { isAuthenticated, isLoading, user, logout } = useAuth()
@@ -18,7 +19,7 @@ function Navbar() {
           to={isAuthenticated ? '/dashboard' : '/login'}
           className="flex items-center gap-2 rounded text-xl font-semibold tracking-tight text-slate-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
         >
-          <img src="/favicon.svg" alt="" aria-hidden="true" className="h-6 w-6" />
+          <img src={BRAND_LOGO_SRC} alt="" aria-hidden="true" className="h-6 w-6" />
           Infinitude
         </Link>
         <nav className="flex flex-wrap items-center gap-3 text-sm font-medium text-slate-600 sm:gap-6">
@@ -32,7 +33,7 @@ function Navbar() {
                 to="/notes/create"
                 className="rounded-md bg-slate-900 px-4 py-2 text-white transition-colors hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
               >
-                + Create TOC
+                + Create Notes
               </Link>
               {user?.name && <span className="hidden text-slate-500 sm:inline">{user.name}</span>}
               <button

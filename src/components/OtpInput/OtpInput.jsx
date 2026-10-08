@@ -20,6 +20,8 @@ function OtpInput({
   autoFocus = true,
   error = false,
   id,
+  inputRef,
+  describedBy,
 }) {
   const inputRefs = useRef([])
   const [syncedValue, setSyncedValue] = useState(value)
@@ -35,6 +37,8 @@ function OtpInput({
 
   function emit(nextDigits) {
     const code = nextDigits.join('')
+    // The parent's echo must not collapse empty boxes during a middle-digit edit.
+    setSyncedValue(code)
     onChange?.(code)
     if (code.length === length && !nextDigits.includes('')) {
       onComplete?.(code)
@@ -42,7 +46,15 @@ function OtpInput({
   }
 
   function handleChange(index, rawValue) {
-    const digit = rawValue.replace(/\D/g, '').slice(-1)
+    const numeric = rawValue.replace(/\D/g, '')
+    if (numeric.length === length) {
+      const next = Array.from({ length }, (_, i) => numeric[i] || '')
+      setDigits(next)
+      emit(next)
+      inputRefs.current[Math.min(numeric.length, length - 1)]?.focus()
+      return
+    }
+    const digit = numeric.slice(-1)
     const next = [...digits]
     next[index] = digit
     setDigits(next)
@@ -70,8 +82,10 @@ function OtpInput({
     }
 
     if (event.key === 'ArrowLeft' && index > 0) {
+      event.preventDefault()
       inputRefs.current[index - 1]?.focus()
     } else if (event.key === 'ArrowRight' && index < length - 1) {
+      event.preventDefault()
       inputRefs.current[index + 1]?.focus()
     }
   }
@@ -101,24 +115,28 @@ function OtpInput({
           id={index === 0 ? id : undefined}
           ref={(el) => {
             inputRefs.current[index] = el
+            if (index === 0 && inputRef) inputRef.current = el
           }}
           type="text"
           inputMode="numeric"
           pattern="[0-9]*"
-          maxLength={1}
+          maxLength={length}
           autoComplete={index === 0 ? 'one-time-code' : 'off'}
           autoFocus={autoFocus && index === 0}
           disabled={disabled}
           value={digit}
           data-testid={`otp-digit-${index}`}
           aria-label={`Digit ${index + 1} of ${length}`}
+          aria-invalid={error || undefined}
+          aria-describedby={describedBy}
+          onFocus={(event) => event.target.select()}
           onChange={(event) => handleChange(index, event.target.value)}
           onKeyDown={(event) => handleKeyDown(index, event)}
           onPaste={handlePaste}
-          className={`h-12 w-11 rounded-md border text-center font-mono text-lg font-semibold shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:h-14 sm:w-12 ${
+          className={`h-12 w-full min-w-0 max-w-11 rounded-lg border text-center font-mono text-lg font-semibold shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:h-14 sm:max-w-12 ${
             error
               ? 'border-red-300 bg-red-50 text-red-700 focus:border-red-500 focus:ring-red-400'
-              : 'border-slate-300 text-slate-900 focus:border-slate-500 focus:ring-slate-400'
+              : 'border-slate-300 text-slate-900 focus:border-violet-500 focus:ring-violet-200'
           }`}
         />
       ))}
