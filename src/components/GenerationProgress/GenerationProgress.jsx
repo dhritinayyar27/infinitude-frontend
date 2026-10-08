@@ -38,7 +38,7 @@ export default function GenerationProgress({ note, starting = false }) {
       </div>
       <p className="mt-3 text-xs text-slate-500">
         {running ? 'Detailed notes include supporting subtopics and worked examples. Each topic may take up to two minutes per AI attempt. You can leave and return later; completed topics appear as they are saved.' :
-          note.status === 'FAILED' ? 'Not all topics succeeded. Completed content is kept; retry generates the full saved outline again.' :
+          note.status === 'FAILED' ? 'Not all topics succeeded. Completed content is kept; regenerating only re-runs the failed topics.' :
             'The progress bar measures processed topics, not successful completion.'}
       </p>
     </section>
