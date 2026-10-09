@@ -4,7 +4,11 @@
   },
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/api/.*", "status": 404 },
+    {
+      "src": "/api/(.*)",
+      "dest": "https://infinitude-backend.onrender.com/api/$1",
+      "headers": { "Cache-Control": "no-store" }
+    },
     { "src": "/.*", "dest": "/index.html" }
   ]
 }

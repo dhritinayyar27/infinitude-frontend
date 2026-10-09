@@ -1,5 +1,27 @@
 # React + Vite
 
+## Cookie authentication and API routing
+
+Production browser requests always use `/api` on the frontend origin, including
+login, session checks, notes, generation, and downloads. [vercel.json](vercel.json)
+proxies those requests to `https://infinitude-backend.onrender.com/api/...` after
+checking local files/functions, so `/api/send-otp` still runs on Vercel.
+API responses are marked `Cache-Control: no-store`.
+
+The backend's host-only `Secure`, `HttpOnly`, `SameSite=Strict` cookie is received
+through the frontend domain and sent back on subsequent same-origin requests.
+Direct browser calls from `vercel.app` to `onrender.com` do not work with this
+cookie policy; `withCredentials` alone cannot bypass SameSite restrictions.
+No JWT is stored in browser storage and cookie security is not relaxed.
+
+Set `VITE_API_BASE_URL=/api` in Vercel and redeploy. Production deliberately
+ignores stale absolute API URLs to prevent cross-site cookie regressions.
+Keep Render `FRONTEND_ORIGIN=https://infinitudeai.vercel.app` (no trailing slash).
+If moving the backend, update the proxy destination in [vercel.json](vercel.json).
+After deploying, log in again to establish the cookie on the frontend domain.
+Vite development also proxies `/api` to `http://localhost:8080`; explicit
+`VITE_API_BASE_URL` overrides are supported only for development.
+
 ## Server-only OTP delivery on Vercel
 
 Deploy this directory as a Vite project (output directory `dist`). Vercel also

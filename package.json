@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "test": "node --test src/pages/TocReview/tocPayload.test.js src/components/GenerationProgress/generationProgress.test.js src/components/NotesMarkdown/markdownOptions.test.js server/sendOtp.test.js",
+    "test": "node --test src/pages/TocReview/tocPayload.test.js src/components/GenerationProgress/generationProgress.test.js src/components/NotesMarkdown/markdownOptions.test.js src/services/apiBaseUrl.test.js server/sendOtp.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

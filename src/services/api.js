@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getApiBaseUrl } from './apiBaseUrl.js'
 
 /**
  * Centralized Axios client for the Infinitude API.
@@ -8,7 +9,7 @@ import axios from 'axios'
  * anywhere in the frontend; it is a backend-only secret.
  */
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+  baseURL: getApiBaseUrl(import.meta.env),
   headers: {
     'Content-Type': 'application/json',
   },
