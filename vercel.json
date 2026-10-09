@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/send-otp.js": { "maxDuration": 30 }
+  },
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/.*", "status": 404 },
+    { "src": "/.*", "dest": "/index.html" }
+  ]
+}
