@@ -1,7 +1,9 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import LoadingSpinner from '../../components/LoadingSpinner'
 import GenerationProgress from '../../components/GenerationProgress/GenerationProgress.jsx'
+import ReadingWorkspace from '../../components/ReadingWorkspace/ReadingWorkspace.jsx'
+import { readTopicParam, withTopic, withoutTopic } from '../../components/ReadingWorkspace/workspaceModel.js'
 import { failedSectionIds, topicRegenerateState, topicStatusLabel } from '../../components/GenerationProgress/progressState'
 import { getNote, generateNotes, regenerateFailedSections, regenerateSection } from '../../services/notesApi'
 import { getErrorMessage } from '../../utils/errorMessage'
@@ -11,6 +13,8 @@ const NotesMarkdown = lazy(() => import('../../components/NotesMarkdown/NotesMar
 
 export default function NotesReview() {
   const { id } = useParams()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedTopicId = readTopicParam(searchParams)
   const [note, setNote] = useState(null)
   const [error, setError] = useState(null)
   const [starting, setStarting] = useState(false)
@@ -42,6 +46,7 @@ export default function NotesReview() {
   async function handleGenerate() {
     if (pendingIds) return
     if (note.status === 'COMPLETED' && !window.confirm('Regenerate all notes from the saved TOC? This replaces the current content.')) return
+    if (selectedTopicId) setSearchParams(current => withoutTopic(current), { replace: true })
     setStarting(true)
     setError(null)
     try {
@@ -94,20 +99,64 @@ export default function NotesReview() {
   const failedIds = failedSectionIds(sections)
   const requestInFlight = starting || pendingIds !== null
 
+  // Completed notes open in the TOC-first reading workspace; every other state keeps the progress/recovery view.
+  const workspaceMode = Boolean(note?.tocSaved && note.status === 'COMPLETED' && sections.length > 0)
+  // A shared link to a topic needs the workspace shell while the note itself is still loading or failed to load.
+  const deepLinkPending = !note && Boolean(selectedTopicId)
+
+  function retryLoad() {
+    setError(null)
+    setReload(value => value + 1)
+  }
+
+  function selectTopic(topicId) {
+    // Entering the reader adds a history entry (Back returns to the overview); switching topics replaces it.
+    setSearchParams(current => withTopic(current, topicId), { replace: Boolean(selectedTopicId) })
+  }
+
+  function showToc() {
+    setSearchParams(current => withoutTopic(current))
+  }
+
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
+    <main className={`mx-auto px-6 py-10 ${workspaceMode || deepLinkPending ? 'max-w-7xl' : 'max-w-4xl'}`}>
       <Link to={`/notes/${id}/toc`} className="text-sm text-blue-700 hover:underline">Review / Edit TOC</Link>
       <h1 className="mt-5 text-2xl font-semibold text-slate-900">{note?.title || 'Generated Notes'}</h1>
-      <p className="mt-2 text-sm text-slate-500">Notes follow the saved TOC. Every topic is shown below, including any failed topics.</p>
-      {error && (
+      {workspaceMode ? (
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <p data-testid="generation-status" className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                <path fillRule="evenodd" clipRule="evenodd" d="M16.7 5.3a1 1 0 0 1 0 1.4l-7.5 7.5a1 1 0 0 1-1.4 0L3.3 9.7a1 1 0 1 1 1.4-1.4l3.8 3.8 6.8-6.8a1 1 0 0 1 1.4 0Z" />
+              </svg>
+              Notes generation complete
+            </span>
+            {sections.length} topic{sections.length === 1 ? '' : 's'}
+          </p>
+          <button onClick={handleGenerate} disabled={requestInFlight || Boolean(error)}
+            className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:opacity-50">
+            {starting ? 'Starting...' : 'Regenerate Notes'}
+          </button>
+        </div>
+      ) : (
+        <p className="mt-2 text-sm text-slate-500">Notes follow the saved TOC. Every topic is shown below, including any failed topics.</p>
+      )}
+      {error && !deepLinkPending && (
         <div role="alert" className="mt-5 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           {error}
           <button onClick={() => setReload(value => value + 1)} className="ml-3 underline">Retry loading</button>
         </div>
       )}
-      {!note && !error && <LoadingSpinner label="Loading notes..." />}
+      {!note && !error && !deepLinkPending && <LoadingSpinner label="Loading notes..." />}
       {note && !note.tocSaved && <p className="mt-5 text-sm text-amber-700">Save your TOC before generating notes.</p>}
-      {note?.tocSaved && (
+      {(workspaceMode || deepLinkPending) && (
+        <div className="mt-6">
+          <ReadingWorkspace sections={sections} selectedId={selectedTopicId}
+            loading={!note && !error} error={note ? null : error}
+            onSelect={selectTopic} onShowToc={showToc} onRetry={retryLoad} />
+        </div>
+      )}
+      {note?.tocSaved && !workspaceMode && (
         <div className="mt-6">
           <GenerationProgress note={note} starting={starting} />
           {!running && note.status === 'FAILED' && failedIds.length > 0 && (
@@ -129,7 +178,7 @@ export default function NotesReview() {
       {note?.status === 'FAILED' && note.tocSaved && (
         <p role="alert" className="mt-4 text-sm text-red-700">Generation is incomplete. Completed topics are kept. Use Regenerate on a failed topic below, or regenerate all failed topics at once.</p>
       )}
-      {note?.tocSaved && (
+      {note?.tocSaved && !workspaceMode && (
         <>
           <nav aria-label="Saved table of contents" className="my-6 rounded-xl border border-slate-200 bg-white p-5">
             {sections.map((section, index) => (
